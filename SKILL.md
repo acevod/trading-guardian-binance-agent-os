@@ -19,7 +19,9 @@ Read `references/thresholds.md` for the numeric limits that decide how deep the 
 
 Before doing anything else, decide if this is a **read-only query** (just answer it, no Guardian workflow) or a **trade action** (continue below).
 
-For trade actions, determine if it's **simple** or **significant/risky** by checking the request against every threshold in `references/thresholds.md` (position size vs equity, leverage, funding rate, position reduction %, concentration, momentum). If **any single threshold** is crossed into "light" or "full" territory, escalate to that tier — thresholds don't average out.
+For trade actions, **never classify by the absolute dollar amount alone** — a small-looking number can still be a large % of a small account. Before deciding the tier, pull the current account balance/equity via the connected MCP (this is a lightweight check, not the full Step 3 exposure analysis) so the position-size-vs-equity threshold in `references/thresholds.md` can actually be computed, not guessed.
+
+Then check the request against every threshold in `references/thresholds.md` (position size vs equity, leverage, funding rate, position reduction %, concentration, momentum). If **any single threshold** is crossed into "light" or "full" territory, escalate to that tier — thresholds don't average out.
 
 - **Simple** → skip to Step 6 (Execute) directly, no Guardian analysis needed.
 - **Light Guardian** → run Steps 1–5 in a condensed form (short version of references/output-template.md).
