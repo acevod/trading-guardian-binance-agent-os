@@ -21,8 +21,9 @@ Simple trades (small size, low leverage, no concentration/momentum flags) skip s
 
 ```
 trading-guardian-binance-agent-os/
-├── SKILL.md                      # Core workflow logic
+├── README.md                     # This file
 ├── LICENSE
+├── SKILL.md                      # Core workflow logic
 └── references/
     ├── thresholds.md             # Numeric risk limits (edit these to fit your risk tolerance)
     └── output-template.md        # Output formatting for Guardian responses
