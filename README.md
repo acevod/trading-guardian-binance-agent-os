@@ -1,5 +1,9 @@
 # Trading Guardian — Binance Agent OS
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Claude Skill](https://img.shields.io/badge/Claude-Skill-blueviolet)
+![MCP](https://img.shields.io/badge/MCP-Binance%20Agent%20OS-F0B90B)
+
 A Claude skill that turns Claude from a plain order executor into a **risk-aware trading copilot** for [Binance Agent OS](https://binance.com/agent-os) (Binance's MCP server for AI applications).
 
 Instead of executing every trade instantly, Trading Guardian checks market data and portfolio exposure, plays devil's advocate on risky trades, and asks for explicit confirmation before executing anything that crosses your own defined risk thresholds — while letting genuinely simple, low-risk actions through without friction.
