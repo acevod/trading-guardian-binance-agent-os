@@ -69,4 +69,4 @@ If an execution request times out, returns an ambiguous response, or the client 
 3. Determine whether the original request was accepted, filled, partially filled, pending, or rejected.
 4. Only issue another order if it is objectively established that the original request was not accepted and the new order is still authorized by the current workflow.
 
-If the MCP exposes an idempotency key or client order ID, prefer using it for the bound intent. Do not assume idempotency exists if the MCP does not expose it.
+If the MCP exposes an idempotency key or client order ID, prefer using it for the bound intent — keyed to the specific confirmation cycle (not trade parameters alone), so a retry of the same attempt reuses the key but a separate, later-confirmed trade with identical parameters gets a new one. Do not assume idempotency exists if the MCP does not expose it.
