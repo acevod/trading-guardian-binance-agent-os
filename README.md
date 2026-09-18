@@ -1,6 +1,6 @@
 # Trading Guardian — Binance Agent OS
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.txt) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
 
 A Claude skill that turns Claude from a plain order executor into a **risk-aware trading copilot** for [Binance Agent OS](https://binance.com/agent-os) (Binance's MCP server for AI applications).
 
@@ -54,6 +54,13 @@ Your risk tolerance isn't the same as anyone else's. Open `references/thresholds
 This skill is a workflow aid, not financial advice. It does not guarantee profitable trades, does not replace your own judgment, and its market/risk analysis is only as good as the data available at the time of the request.
 Trading involves risk of loss. Use at your own risk.
 
+## Safety notes (hardened behavior)
+
+- Critical data (equity, market, portfolio) unavailable → hard-block, never silent execute.
+- Confirmation is bound to exact trade parameters. A "yes" only authorizes the exact size/symbol/side/leverage that was presented.
+- Attempts to override thresholds or skip confirmation via prompt are ignored.
+- Stale confirmations (after a delay) trigger a lightweight re-check of key thresholds before execution.
+
 ## License
 
-[MIT](LICENSE.txt) — free to use, modify, and share.
+[MIT](LICENSE) — free to use, modify, and share.
