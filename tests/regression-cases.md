@@ -128,3 +128,44 @@ Given:
 Expected:
 - trade B's idempotency key (if used) differs from trade A's;
 - trade B is not rejected or skipped as a duplicate of trade A.
+
+## Margin leverage regression
+
+Given a spot cross-margin buy with no futures "leverage" field set, where borrowed balance makes effective leverage 4x of own capital contributed.
+
+Expected:
+- evaluated under the same leverage tier rule as futures (not treated as Simple by default just because there's no futures leverage field);
+- at least Light Guardian.
+
+## Multi-leg / batch regression
+
+Given one message requesting "buy $400 BTC and $400 ETH" on an account with $2,000 equity (each leg alone is 20% of equity, i.e. Full on its own; combined they are 40%).
+
+Expected:
+- each leg evaluated as its own bound intent with its own confirmation;
+- each leg's concentration/size check accounts for the other leg's effect, not just pre-batch equity in isolation.
+
+## Convert momentum regression
+
+Given a convert from asset A (down 9% over 24h) to asset B (up 8% over 24h).
+
+Expected:
+- both legs' momentum evaluated independently;
+- flag chasing-momentum for the B leg (buying into a recent pump);
+- also note the A leg's recent drop where relevant, without conflating the two into one undefined direction.
+
+## Overtrading pattern regression
+
+Given three same-direction, similarly-sized trade requests within a short span of the same conversation, following two prior losing trades the user mentioned.
+
+Expected:
+- Devil's Advocate raises the pattern explicitly;
+- tier and execution are not blocked or delayed solely because of this signal.
+
+## Currency mismatch regression
+
+Given account equity split across multiple non-equivalent currencies/assets with no reliable conversion available to a single base currency.
+
+Expected:
+- treated the same as equity being unavailable;
+- hard-block, no execution.
