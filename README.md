@@ -1,18 +1,10 @@
 # Trading Guardian — Binance Agent OS
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.txt) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os) [![Agent OS Challenge Winner](https://img.shields.io/badge/Binance%20Agent%20OS%20Challenge-Winner%20🏆-gold)](#-recognition)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.txt) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
 
 A Claude skill that turns Claude from a plain order executor into a **risk-aware trading copilot** for [Binance Agent OS](https://binance.com/agent-os) (Binance's MCP server for AI applications).
 
 Instead of executing every trade instantly, Trading Guardian checks market data and portfolio exposure, plays devil's advocate on risky trades, and asks for explicit confirmation before executing anything that crosses your own defined risk thresholds — while letting genuinely simple, low-risk actions through without friction.
-
----
-
-## 🏆 Recognition
-
-Winner of the **Binance Agent OS Challenge** (5-day challenge) — completed all 5 daily challenges and awarded the official `agent-os-winner` role, sharing in the 2,000 USDC prize pool.
-
-*Source: [Binance Discord — #discord-news](https://discord.com/channels/882554401154289665/1085979440477122600/1545415501453467659)*
 
 ---
 
