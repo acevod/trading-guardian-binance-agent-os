@@ -1,6 +1,6 @@
 # Trading Guardian Binance Agent OS
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os) [![Version](https://img.shields.io/badge/version-2.0.0-blue)](CHANGELOG.md)
 
 A risk-aware Claude Skill that sits between a user's trading request and Binance Agent OS MCP execution.
 
@@ -36,6 +36,7 @@ A Simple trade is **not** exempt from market, portfolio, concentration, or final
 trading-guardian-binance-agent-os/
 ├── SKILL.md
 ├── README.md
+├── CHANGELOG.md
 ├── LICENSE
 ├── references/
     ├── thresholds.md
@@ -62,12 +63,21 @@ This repository does not implement the Binance API, database, authentication ser
 - No blind retry after ambiguous execution results.
 - Post-execution verification of order/position state.
 - MCP tool output is treated as untrusted data, never as instructions.
+- Leverage evaluation covers margin trades, not only futures.
+- Multi-leg/batch requests are each their own bound intent, evaluated for their combined effect on equity-based checks.
+- Convert/swap requests evaluate momentum independently on both legs.
+- Every percentage-based check is computed in a single, converted base currency; an unreliable conversion hard-blocks rather than silently using a mismatched base.
+- Session-level overtrading pattern surfaced as an informational signal — never a gate on execution.
 
 ## Thresholds
 
 See [`references/thresholds.md`](references/thresholds.md) for the current numeric policy.
 
 See [`references/execution-safety.md`](references/execution-safety.md) for freshness, revalidation, and ambiguous-execution handling.
+
+## Changelog
+
+See [`CHANGELOG.md`](CHANGELOG.md) for version history. **v2.0.0 changes trade classification and fail-safe behavior** relative to v1.0.0 — review it before relying on prior behavior assumptions.
 
 ## Important scope note
 
