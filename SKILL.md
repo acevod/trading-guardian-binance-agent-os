@@ -35,6 +35,8 @@ If anything is ambiguous, ask before proceeding — do not guess trade parameter
 
 These exact parameters become the **bound trade intent**. Classification, confirmation, revalidation, and execution must all refer to this same intent. A later user change creates a new intent and requires a new classification cycle.
 
+**Multi-leg / batch requests:** if one message requests more than one trade (e.g. "buy BTC and ETH", "close these three positions"), treat each trade as its own bound intent with its own Steps 0–7 — do not silently merge them into a single evaluation. However, when computing equity-based checks (position size, concentration) for each leg, account for the **combined effect** of the other legs in the same request as if they had already been applied — evaluating each leg against pre-batch equity alone can understate the real post-batch concentration or size. Present and confirm each leg clearly (which one is which) rather than one combined confirmation.
+
 ## Step 1 — Gather the minimum complete risk state
 
 Do **not** classify the trade as Simple yet. Classification must happen only after all risk inputs applicable to the request have been collected.
@@ -75,7 +77,8 @@ Evaluate **every applicable risk control** before assigning a tier:
 - correlated-group concentration;
 - momentum;
 - funding, for futures;
-- volume classification when the data is available.
+- volume classification when the data is available;
+- session-level trading pattern (overtrading/revenge-trading signal, see `references/thresholds.md`).
 
 No individual check may be skipped merely because another metric looks small. Warning-only signals may add warnings without changing the tier, but they must still be evaluated and recorded when applicable.
 
@@ -165,6 +168,8 @@ If the execute call times out or its result is ambiguous, **do not blindly retry
 ## Step 8 — Execution receipt
 
 Give the user a short, clear confirmation: what executed, at what price/size, and the resulting position/allocation. See `references/output-template.md` for format.
+
+This Skill is stateless and keeps no record of past decisions on its own. For Light/Full Guardian trades, append the compact decision-log line from `references/output-template.md` to the receipt, so the user has a self-contained record (tier, key thresholds crossed, snapshot values used) if they want to save or review it later — this is informational only and never blocks or delays execution.
 
 ## Design principles
 
