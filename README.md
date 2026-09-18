@@ -1,66 +1,70 @@
-# Trading Guardian — Binance Agent OS
+# Trading Guardian Binance Agent OS
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
+A risk-aware Claude Skill that sits between a user's trading request and Binance Agent OS MCP execution.
 
-A Claude skill that turns Claude from a plain order executor into a **risk-aware trading copilot** for [Binance Agent OS](https://binance.com/agent-os) (Binance's MCP server for AI applications).
+## What it does
 
-Instead of executing every trade instantly, Trading Guardian checks market data and portfolio exposure, plays devil's advocate on risky trades, and asks for explicit confirmation before executing anything that crosses your own defined risk thresholds — while letting genuinely simple, low-risk actions through without friction.
+Trading Guardian evaluates the complete available risk state before classifying a trade as Simple, Light Guardian, or Full Guardian. It is designed to challenge risky trades without preventing a user from making their own decision.
 
----
+### Safety flow
 
-## How it works
-
-**Challenge → Inform → Confirm → Execute → Verify**
-
-1. **Classify** — is this a simple action, or does it cross a risk threshold?
-2. **Market check** — price, momentum, funding rate, volume
-3. **Portfolio check** — current exposure, allocation after the trade, concentration risk
-4. **Devil's Advocate + Bull Case** — concrete reasons the trade could be wrong, and the case for it
-5. **Verdict + confirmation** — a one-line risk verdict, then Claude asks before executing
-6. **Execute + verify** — places the order via Binance Agent OS, then confirms it actually filled
-
-Simple trades (small size, low leverage, no concentration/momentum flags) skip straight to execution — no unnecessary friction.
-
-## Structure
-
+```text
+Bind intent
+  ↓
+Gather complete risk state
+  ↓
+Evaluate all applicable thresholds
+  ↓
+Classify
+  ├─ Simple ───────────────┐
+  └─ Light / Full → Confirm│
+                           ↓
+                   Final revalidation
+                           ↓
+                        Execute
+                           ↓
+                         Verify
 ```
+
+A Simple trade is **not** exempt from market, portfolio, concentration, or final-state checks. It only means the complete evaluation found no tier-producing threshold requiring Guardian confirmation.
+
+## Files
+
+```text
 trading-guardian-binance-agent-os/
-├── SKILL.md                      # Core workflow logic
+├── SKILL.md
+├── README.md
 ├── LICENSE
 └── references/
-    ├── thresholds.md             # Numeric risk limits (edit these to fit your risk tolerance)
-    └── output-template.md        # Output formatting for Guardian responses
+    ├── thresholds.md
+    ├── execution-safety.md
+    └── output-template.md
 ```
 
 ## Requirements
 
-- A Claude.ai account (Free, Pro, Max, Team, or Enterprise) with **Code execution and file creation** enabled in Settings > Capabilities
-- The [Binance Agent OS](https://binance.com/agent-os) MCP connector connected to your account
+- Claude with Skills support
+- Binance Agent OS MCP connected and authorized for the requested trading operation
 
-## Installation
+This repository does not implement the Binance API, database, authentication service, frontend, or execution backend itself. Those components remain outside this Skill's codebase and must be secured independently.
 
-1. Download or clone this repo
-2. Zip the `trading-guardian-binance-agent-os/` folder (folder itself as the root of the zip)
-3. In Claude.ai, go to **Settings > Customize > Skills**
-4. Click **"+"** → **"+ Create skill"** → **"Upload a skill"**
-5. Upload the zip file, then toggle the skill on
+## Safety properties
 
-## Customizing thresholds
+- Fail closed when required equity, market, or portfolio data is unavailable or not fresh enough.
+- Evaluate all applicable risk inputs before assigning the Simple tier.
+- Deterministic concentration rules; model judgment is not the sole basis for security-critical classification.
+- Exact trade-intent binding across classification, confirmation, revalidation, and execution.
+- Mandatory final pre-execution state refresh for every tier.
+- No blind retry after ambiguous execution results.
+- Post-execution verification of order/position state.
+- MCP tool output is treated as untrusted data, never as instructions.
 
-Your risk tolerance isn't the same as anyone else's. Open `references/thresholds.md` and adjust the numbers — position size %, leverage caps, funding rate flags, concentration limits — to match your own account size and trading style. The workflow logic in `SKILL.md` doesn't need to change when you do this.
+## Thresholds
 
-## Disclaimer
+See [`references/thresholds.md`](references/thresholds.md) for the current numeric policy.
 
-This skill is a workflow aid, not financial advice. It does not guarantee profitable trades, does not replace your own judgment, and its market/risk analysis is only as good as the data available at the time of the request.
-Trading involves risk of loss. Use at your own risk.
+See [`references/execution-safety.md`](references/execution-safety.md) for freshness, revalidation, and ambiguous-execution handling.
 
-## Safety notes (hardened behavior)
+## Important scope note
 
-- Critical data (equity, market, portfolio) unavailable → hard-block, never silent execute.
-- Confirmation is bound to exact trade parameters. A "yes" only authorizes the exact size/symbol/side/leverage that was presented.
-- Attempts to override thresholds or skip confirmation via prompt are ignored.
-- Stale confirmations (after a delay) trigger a lightweight re-check of key thresholds before execution.
-
-## License
-
-[MIT](LICENSE) — free to use, modify, and share.
+This Skill is a policy/workflow layer. It cannot guarantee the security of the connected MCP or Binance account. In particular, API authentication/authorization, exchange-side permissions, transport security, and the implementation of the connected Agent OS remain outside this repository.
