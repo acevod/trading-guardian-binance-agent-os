@@ -13,7 +13,7 @@ If any one **tier-producing** threshold below crosses into Light or Full, the wh
 
 Calculate using the intended order notional in the account base currency divided by the current account equity. If the required notional or equity cannot be determined reliably, hard-block rather than guessing.
 
-## 2. Leverage (futures) — tier-producing
+## 2. Leverage (futures and margin) — tier-producing
 | Range | Tier |
 |---|---|
 | ≤ 3x | Simple |
@@ -21,6 +21,8 @@ Calculate using the intended order notional in the account base currency divided
 | > 10x | Full Guardian (always flag as high-risk regardless of size) |
 
 Use the leverage that will actually be submitted. If leverage is being changed, evaluate the resulting leverage as part of the same bound intent.
+
+This rule applies to **any trade with borrowed capital**, not only futures. For spot/cross margin trades (borrowing to buy, or borrowing the asset to sell), compute effective leverage as (position notional) / (own capital contributed), using the account's actual borrow/margin data from the MCP — not just the "leverage" field on a futures order. A margin buy with no leverage field set is still leverage if it draws on borrowed balance.
 
 ## 3. Funding rate (futures, per 8h) — warning-only
 | Range | Treatment |
@@ -68,15 +70,24 @@ If the post-trade correlated-group allocation would exceed 60% of total equity �
 
 This is a warning-only signal under the current policy. It does not independently change the tier unless another tier-producing rule is crossed.
 
+**Convert / swap (A → B):** treat a convert as two legs for this check — decreasing exposure to A and increasing exposure to B. Evaluate momentum independently for each side using that side's own 24h move, and surface either or both flags if applicable (e.g. converting out of an asset that just dropped >7%, or into one that just pumped >7%, can each independently be "chasing momentum" in different directions).
+
 ## 7. Volume — descriptive signal only
 
 Volume must be reported only when a reliable baseline or classification is available from the market-data source. This policy does **not** define a numeric volume threshold, so do not invent one.
 
 If the source provides a native `normal/elevated` classification, report it as supplied and identify it as source-provided. Otherwise omit the volume classification rather than manufacturing a threshold.
 
+## 8. Trading pattern (session-level) — warning-only
+
+This is a warning-only signal, evaluated from the conversation itself (no separate MCP data needed): if this is one of several same-direction, similarly-sized trade requests from the user in a short span within the current conversation — especially following one or more recent losing trades the user has mentioned or that are visible from executed order history — raise it explicitly in Devil's Advocate as a possible overtrading/revenge-trading pattern.
+
+This does not independently change the tier and must never be used to block or delay execution on its own; it is a prompt for the user's own awareness, not a gate.
+
 ## Defaults / fallback
 - Default account base currency: USDT
 - Default market: USDⓈ-M Futures (not COIN-M) for futures trades
 - Default margin type: Cross
+- **Currency consistency:** convert every value used in a percentage calculation (position notional, equity, single-asset and correlated-group allocations) into the same base currency before computing any ratio. If account equity is split across multiple currencies/assets and cannot be reliably converted to a single base currency at current rates, treat this the same as equity being unavailable — hard-block rather than computing a percentage against a mismatched or partial base.
 - Critical data unavailable (equity, required market data, or portfolio/position data): hard-block. Do not execute.
 - Undefined or ambiguous tier-producing rule: Full Guardian / confirmation required rather than silent execution.
