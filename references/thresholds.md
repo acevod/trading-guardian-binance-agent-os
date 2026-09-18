@@ -33,9 +33,15 @@ If any one threshold below crosses into "light" or "full," the whole trade escal
 | > 70% (or closing to zero) | Full Guardian |
 
 ## 5. Concentration
-- Single asset > 40% of total equity → flag concentration risk
-- Correlated group (e.g. BTC + ETH + SOL as "crypto beta") > 60% of total equity → flag even if no single asset is individually over 40%
-- For assets outside the BTC/ETH/SOL example: treat large-cap coins that move closely with BTC (high historical correlation, e.g. most top-20 non-stablecoin majors) as part of the "crypto beta" group too. Stablecoins are never part of this group. If it's genuinely unclear whether an asset is correlated enough to group, default to flagging rather than skipping the check.
+
+**Single-asset concentration**
+- Single asset > 40% of total equity → flag concentration risk (escalate at least to Light Guardian; Full if also size/leverage thresholds are crossed).
+
+**Correlated-group concentration ("crypto beta")**
+- Treat the following as one correlated group by default: BTC, ETH, SOL, and any other non-stablecoin asset that is currently ranked in the top 20 by market capitalization (or that the model reasonably judges to have high historical correlation with BTC).
+- Stablecoins (USDT, USDC, BUSD, FDUSD, DAI, etc.) are **never** part of this group.
+- If the group would exceed 60% of total equity after the trade → flag concentration risk.
+- If it is genuinely unclear whether an asset belongs in the group, **default to flagging** rather than skipping the check.
 
 ## 6. Momentum (Devil's Advocate input)
 - 24h price move > ±7% in the *same direction* as the requested trade → flag as "chasing momentum"
@@ -44,7 +50,7 @@ If any one threshold below crosses into "light" or "full," the whole trade escal
 - Default account base currency: USDT
 - Default market: USDⓈ-M Futures (not COIN-M) for futures trades
 - Default margin type: Cross
-- If equity/portfolio data can't be retrieved, treat the trade as Light Guardian minimum — don't silently execute without exposure context.
+- **Critical data unavailable (equity, market data, or portfolio/position data):** hard-block. Do not execute. Inform the user and ask them to retry. Do not fall back to Light Guardian or any silent path.
 
 ## Notes
 These are starting-point defaults, not fixed rules — revisit as account size, trading style, or risk tolerance changes.
