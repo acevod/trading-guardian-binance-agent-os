@@ -1,5 +1,7 @@
 # Trading Guardian Binance Agent OS
 
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) [![Binance Agent OS](https://img.shields.io/badge/Binance-Agent%20OS-yellow)](https://binance.com/agent-os)
+
 A risk-aware Claude Skill that sits between a user's trading request and Binance Agent OS MCP execution.
 
 ## What it does
@@ -35,10 +37,12 @@ trading-guardian-binance-agent-os/
 ├── SKILL.md
 ├── README.md
 ├── LICENSE
-└── references/
+├── references/
     ├── thresholds.md
     ├── execution-safety.md
     └── output-template.md
+└── tests/
+    └── regression-cases.md
 ```
 
 ## Requirements
