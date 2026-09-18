@@ -35,6 +35,7 @@ If any one threshold below crosses into "light" or "full," the whole trade escal
 ## 5. Concentration
 - Single asset > 40% of total equity → flag concentration risk
 - Correlated group (e.g. BTC + ETH + SOL as "crypto beta") > 60% of total equity → flag even if no single asset is individually over 40%
+- For assets outside the BTC/ETH/SOL example: treat large-cap coins that move closely with BTC (high historical correlation, e.g. most top-20 non-stablecoin majors) as part of the "crypto beta" group too. Stablecoins are never part of this group. If it's genuinely unclear whether an asset is correlated enough to group, default to flagging rather than skipping the check.
 
 ## 6. Momentum (Devil's Advocate input)
 - 24h price move > ±7% in the *same direction* as the requested trade → flag as "chasing momentum"
